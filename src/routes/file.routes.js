@@ -9,8 +9,8 @@ const { fileController } = require('../controller/index');
 const upload = require('../util/file');
 
 router
-  .route('/')
-  .post(upload.single('file'), fileController.output.index);
+  .route('/insert')
+  .post(upload.single('test'), fileController.output.index);
 
 
 

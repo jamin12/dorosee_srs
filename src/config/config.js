@@ -65,6 +65,19 @@ module.exports = {
       timezone: '+09:00',
       waitForConnections: true,
       connectionLimit: 20
+    },
+    production: {
+      host: envVars.MYSQL_HOST,
+      port: envVars.MYSQL_PORT,
+      username: envVars.MYSQL_USERNAME,
+      password: envVars.MYSQL_PASSWORD,
+      database: envVars.MYSQL_DATABASE,
+      dialect: "mysql",
+      debug: false,
+      charset: 'utf8mb4',
+      timezone: '+09:00',
+      waitForConnections: true,
+      connectionLimit: 20
     }
   },
   // jwt: {

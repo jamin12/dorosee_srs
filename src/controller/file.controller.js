@@ -10,9 +10,9 @@ const httpStatus = require("http-status");
 const userservice = new UserService();
 
 const output = {
-	index: async (req, res, next) => {
-		res.json({ test: "hihi", userid: req.user });
-	},
+	index: catchAsync(async (req, res) => {
+		res.send({ test: "hihi"});
+	}),
 };
 
 const input = {

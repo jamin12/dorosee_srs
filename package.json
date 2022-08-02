@@ -35,8 +35,12 @@
     "xss-clean": "^0.1.1"
   },
   "scripts": {
-    "start": "nodemon ./bin/www.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "pm2 start ecosystem.config.json --no-daemon",
+    "dev": "cross-env NODE_ENV=development nodemon ./bin/www.js",
+    "test": "jest -i --colors --verbose --detectOpenHandles",
+    "test:watch": "jest -i --watchAll",
+    "coverage": "jest -i --coverage",
+    "coverage:coveralls": "jest -i --coverage --coverageReporters=text-lcov | coveralls"
   },
   "author": "",
   "license": "MIT",
