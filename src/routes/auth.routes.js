@@ -14,7 +14,7 @@ router
 
 router
   // 세션 만료
-  .route('logout')
+  .route('/logout')
   .get(auth('user'), authController.output.logout)
 
 module.exports = router;

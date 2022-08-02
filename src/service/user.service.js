@@ -1,25 +1,10 @@
-const { users, user_details, sequelize, Sequelize } = require("../models/index");
+const { users, user_details, sequelize } = require("../models/index");
 const bcrypt = require('bcryptjs');
 const { v4: uuid } = require('uuid');
 const logger = require("../config/logger");
 const CustomError = require("../util/Error/customError");
 const httpStatus = require("http-status");
 const pick = require("../util/pick");
-
-const userJ = sequelize.define(
-	"users",
-	// { id: Sequelize.INTEGER },
-	{ timestamps: false }
-);
-
-const userDetailJ = sequelize.define(
-	"user_details",
-	// { id: Sequelize.INTEGER },
-	{ timestamps: false }
-);
-
-users.hasMany(userDetailJ);
-userDetailJ.belongsTo(userJ);
 
 class UserService {
 	constructor() {
@@ -67,7 +52,7 @@ class UserService {
 
 	async createUser(userInfo) {
 		// 트랜젝션 처리
-		await sequelize.transaction(async (t1) => {
+		sequelize.transaction(async (t1) => {
 			const id = uuid();
 			// user 테이블에 데이터 삽입
 			await users.create({
@@ -91,7 +76,7 @@ class UserService {
 		const userId = await this.checkUserByUsername(username, userInfo.username);
 		const userbasic = pick(userInfo, ['username', 'password', 'role']);
 		const userDetil = pick(userInfo, ['details']);
-		await sequelize.transaction(async (t1) => {
+		sequelize.transaction(async (t1) => {
 			await users.update(
 				userbasic,
 				{

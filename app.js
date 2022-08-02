@@ -60,9 +60,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // limit repeated failed requests to auth endpoints
-if (process.env.NODE_ENV === 'production') {
-    app.use('/v1/auth', authLimiter);
-}
+// if (process.env.NODE_ENV === 'production') {
+//     app.use('/v1/auth', authLimiter);
+// }
 
 // 라우팅
 app.use("/", home); // use -> 미들웨어를 등록해주는 메서드.
