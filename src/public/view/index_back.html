@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<title>LiDAR Annotator</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
+		<link href="../public/css/style.css" rel="stylesheet">
+		<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> -->
+		<!-- <link href="../public/styles/bootstrap/bootstrap.min.css" rel="stylesheet"> -->
+		<link href="../public/css/custom.css" rel="stylesheet">
+		<link href="../public/css/bootstrap.css" rel="stylesheet">
+
+
+		<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
+
+	</head>
+
+	<body style="background-color:#181818; color: #ffffff;">
+
+		<div style="display:flex; justify-content: space-between;">
+			<div style=" width: 50%; display: flex; flex-direction: column;">
+
+				<div id="main_view_container" style="width:100%; height:591px; float:left; position:relative;">
+					<!-- <input type="file"
+					style="position:absolute; top:0px; left:0px; width: 100%; z-index:10; padding-left:33%; background:#2e3847;"
+					id="file_input" class="inputfile" multiple> -->
+					<!-- height:500 -->
+					<div id="viewMode"
+						style="position:absolute; right:20px; color:yellow; font-weight:bold; font-size:15px;">default
+					</div>
+					<canvas id="main_canvas" style="width:100%; height:100%; display:block;"></canvas>
+					<div id="footer">
+						<!-- <p></p> -->
+					</div>
+				</div>
+				<div style="width:100%; display:flex; justify-content: center; align-items: center;">
+					<p id="footer_text" style="color:white;"></p>
+				</div>
+			</div>
+
+
+
+			<div style="width: 49.5%; display: flex; flex-direction: column;">
+				<div id="img_name" style="width:100%; z-index:10; background:#2e3847; height:28px; font-size: 0.8rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;">
+					files not upload</div>
+				<div
+					style="float:left; width:100%; height:470px; border: 1px solid blue; position:relative; overflow:hidden;">
+					<div id="zoom">
+						<img id="img" style="width:100%; height:100%; background-color: grey;"
+							src="../public/images/noimage.png">
+						<canvas id="image_2D_canvas" width="1920" height="1080"
+							style="position:absolute; top:0px; left:0px; display:none; z-index:999"></canvas>
+						<canvas id="image_2D_canvas_select" width="1920" height="1080"
+							style="position:absolute; top:0px; left:0px; display:none;"></canvas>
+						<canvas id="save_canvas" width="1920" height="1080" style="display:none;"></canvas>
+					</div>
+				</div>
+
+				<div class="tools"
+					style="width:100%; height:50vh; float:left; border:1px solid blue; background: #2e3847; color:white;">
+					<nav class="tools">
+						<ul id="tools">
+
+							<div
+								style="display:flex; width:100%; height:50px; justify-content: space-between; align-items: center; padding: 0 20px;">
+								<button type="button" id="previous_frame" class="btn btn-primary" tabindex="-1"
+									style="background:#2E4A71; border:0px;">Previous Frame</button>
+								<div class="btn btn-primary" id="frame_index" tabindex="-1"
+									style="background: #2E4A71; border: 0px;">1/file_length</div>
+								<!-- <input type="text" id="input_frame_index" tabindex="-1" style="width:7%;" type="text"
+									onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" /> -->
+								<button type="button" id="next_frame" class="btn btn-primary" tabindex="-1"
+									style="background:#2E4A71; border:0px;">Next Frame</button>
+							</div>
+
+							<div
+								style="display:flex; width:100%; height:50px; justify-content: space-between; align-items: center; padding: 0px 20px 0px 20px;">
+
+
+								<div class="filebox" style="width:24%;">
+									<label for="folderUploadSelect" class="btn btn-primary" tabindex="-1"
+										style="background:#2E4A71; border:0px; color:white; width:100%;">file
+										import</label>
+									<input id="folderUploadSelect" type="file" tabindex="-1" webkitdirectory directory>
+								</div>
+								<button type="button" id="save" class="btn btn-primary"
+									style="width:24%; background:#2E4A71; border:0px;" tabindex="-1">SaveJSON</button>
+								<!-- <button type="button" id="overlaybutton" class="btn btn-primary "
+									style="width:24%; background:#2E4A71; border:0px;" tabindex="-1">overlay</button> -->
+								
+
+							</div>
+
+
+							<div class="accordion" id="accordionExample" style="width:98%; margin-left:1%;">
+								<div class="accordion-item">
+									<h2 class="accordion-header" id="headingOne">
+										<button class="accordion-button ab_custom" tabindex="-1"
+											style="background-color:#202A33; color:#9EA7B1;" type="button"
+											data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne"
+											aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+											<div style="display:flex;">
+												Object Detail
+											</div>
+										</button>
+									</h2>
+									<div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
+										aria-labelledby="panelsStayOpen-headingOne" style="background-color:#1B1F23;">
+										<div class="accordion-body" style="padding : 0px;">
+											<!-- #6C5E97 -->
+											<!-- 이 아래로 object table -->
+											<div id="object_detail_div"
+												style="padding-left: 5px; padding-top: 5px; padding-right: 5px;">
+												<div
+													style="width:100%; display:flex; align-items: center; justify-content: center; margin-bottom:5px;">
+													<div style="width:20%;">
+														Display
+													</div>
+													<div
+														style="width:80%; display:flex; justify-content: space-evenly; align-items:center">
+														<input type="checkbox" class="display_checkbox"
+															name="display_value" value="cuboid" checked
+															tabindex="-1">Cuboid
+														<input type="checkbox" class="display_checkbox"
+															name="display_value" value="box" checked tabindex="-1">Box
+														<input type="checkbox" class="display_checkbox"
+															name="display_value" value="selected" tabindex="-1">selected
+														<input type="checkbox" class="display_checkbox"
+															name="display_value" value="crop" tabindex="-1">Crop
+													</div>
+
+												</div>
+												<div
+													style="display:flex; font-weight:bold; margin-bottom:10px; color:#9EA7B1; align-items: center; justify-content: space-around;">
+													<div id="OD_selectedId">not selected object_id now!</div>
+													<button type="button" id="WarningSkipButton"
+														class="btn btn-primary "
+														style="margin-right:10px; background:#2E4A71; border:0px; display:flex;"
+														tabindex="-1">Warning Enable</button>
+													<button type="button" id="object_property_save"
+														class="btn btn-primary "
+														style="margin-right:10px; background:#2E4A71; border:0px; display:flex;"
+														tabindex="-1">save</button>
+													<button type="button" id="copyButton" class="btn btn-primary "
+														onclick=""
+														style="margin-right:10px; background:#2E4A71; border:0px;"
+														tabindex="-1">copy</button>
+													<button type="button" id="clearButton" class="btn btn-primary "
+														onclick=""
+														style="margin-right:10px; background:#2E4A71; border:0px;"
+														tabindex="-1">clear</button>
+													<button type="button" id="settingButton" class="btn btn-primary "
+														onclick=""
+														style="margin-right:10px; background:#2E4A71; border:0px;"
+														tabindex="-1">setting</button>
+													<!-- <div>
+													sppedValue
+													<input type="text" id="moveSpeed" value="5" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');" tabindex="-1">
+												</div> -->
+
+												</div>
+
+												<div class="wid100"
+													style="display:flex; margin-bottom:10px; justify-content: space-between;">
+													<div class="flex_default" style="width:54%;">
+														<div class="object_detail_head">Class</div>
+														<!-- <div id="td_category" class="object_detail_value wid60"
+														style="display:none;">car</div> -->
+														<div id="td_category" class="object_detail_value"
+															style="width:70%; background:none;">
+															<select id="select_classes" class="classes"
+																style="width:100%;" tabindex="-1">
+
+															</select>
+														</div>
+													</div>
+
+													<div class="flex_default" style="width: 45%;">
+														<div class="object_detail_head wid60">Subclass</div>
+														<!-- <div id="td_subclass" class="object_detail_value wid40" style="display:none;">normal</div> -->
+														<div id="td_subclass" class="object_detail_value wid60"
+															style="background:none;">
+															<select id="select_subclasses" class="subclasses"
+																tabindex="-1" style="width:100%;">
+
+															</select>
+														</div>
+													</div>
+												</div>
+												<div class="wid100"
+													style="display:flex; justify-content: space-between; ">
+													<div class="flex_default "
+														style="margin-bottom:5px; width:54%; flex-direction: column; justify-content: space-between;">
+
+														<div class="flex_default object_detail_component">
+															<div class="object_detail_head" style="width:30%;">
+																Truncation
+															</div>
+															<!-- <div class="object_detail_value" style="width:70%;">
+															<div
+																style="width:100%; font-size: 0.85rem; display:flex; align-items: baseline; justify-content: space-evenly;">
+																<div id="truncation_value" style="width:50%;">
+																	0</div>
+																<input type="text" id="truncation_value_input" tabindex = "-1"
+																	class="object_detail_value" style="width:50%;"
+																	onkeyup="" placeholder="input truncation_value!" value="0">
+															</div>
+														</div> -->
+															<select id="select_truncation"
+																style="width:70%; height:100%;">
+																<option value="0">0</option>
+																<option value="0.1">0.1</option>
+																<option value="0.2">0.2</option>
+																<option value="0.3">0.3</option>
+																<option value="0.4">0.4</option>
+																<option value="0.5">0.5</option>
+																<option value="0.6">0.6</option>
+																<option value="0.7">0.7</option>
+																<option value="0.8">0.8</option>
+																<option value="0.9">0.9</option>
+															</select>
+														</div>
+														<div class="flex_default object_detail_component">
+															<div class="object_detail_head" style="width:30%;">Occlusion
+															</div>
+															<div id="td_occlusion" class="object_detail_value wid60"
+																style="display:none;">0</div>
+															<div class="object_detail_value" style="width:70%;">
+																<div style="width:100%; font-size: 0.9rem;
+																display: flex;
+																align-items: center;
+																justify-content: space-evenly;">
+																	<input type="radio" class="occlusion_radio"
+																		name="occlusion_value" value="0" checked
+																		tabindex="-1">0
+																	<input type="radio" class="occlusion_radio"
+																		name="occlusion_value" value="1" tabindex="-1">1
+																	<input type="radio" class="occlusion_radio"
+																		name="occlusion_value" value="2" tabindex="-1">2
+																	<input type="radio" class="occlusion_radio"
+																		name="occlusion_value" value="3" tabindex="-1">3
+																	<input type="radio" class="occlusion_radio"
+																		name="occlusion_value" value="4" tabindex="-1">4
+																</div>
+															</div>
+														</div>
+														<div class="flex_default object_detail_component">
+															<div class="object_detail_head">Tracking_id</div>
+															<div style="width:30%; display:flex; height:100%;">
+																<!-- <div id="tracking_id_value" class="object_detail_value" style="width:40%; height:100%;">
+																0</div> -->
+																<input type="text" id="td_tracking_id" tabindex="-1"
+																	class="object_detail_value"
+																	style="width:40%; height:100%;"
+																	onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+																<!-- <div style="width:20%; height:100%; display:flex; justify-content: center; align-items: center; background:white; color:black;">
+																und
+															</div> -->
+																<div
+																	style="width:60%; height:100%; display:flex; flex-direction: column; background:white;">
+																	<div id="up_tracking_id" style="background:grey; height:50%; display:flex; align-items: center;
+																justify-content: center; border-bottom:1px solid black;" onclick="management_tracking_id(this)">up
+																	</div>
+
+																	<div id="down_tracking_id" style="background:grey; height:50%; display:flex; align-items: center;
+																justify-content: center;" onclick="management_tracking_id(this)">down</div>
+																</div>
+															</div>
+
+															<div class="object_detail_head">set new Tracking_id</div>
+															<div style="width:10%; height:100%;">
+																<input type="text" id="choose_tracking_id" tabindex="-1"
+																	class="object_detail_value"
+																	style="width:100%; height:100%;"
+																	onKeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+															</div>
+														</div>
+														<div class="flex_default object_detail_component">
+															<div class="object_detail_head">Distance</div>
+															<div id="td_alpha" class="object_detail_value"
+																style="width:70%;">distance</div>
+														</div>
+														<div class="flex_default object_detail_component">
+															<div class="object_detail_head">Yaw</div>
+															<div id="td_yaw" class="object_detail_value"
+																style="width:70%;">
+																-10</div>
+														</div>
+
+													</div>
+
+													<div class="flex_default"
+														style="margin-bottom:5px; width:45%; flex-direction: column; margin-left: 1%;">
+
+														<!-- <div class="flex_default wid25">
+														<div class="object_detail_head wid60">object_index</div>
+														<div id="td_object_index" class="object_detail_value wid40">0</div>
+													</div> -->
+														<div class="flex_column">
+															<div class="flex_default object_detail_head wid100">Box
+															</div>
+															<div class="flex_default wid100">
+																<div class="wid25"
+																	style="background:#97AFD5;color:black;">
+																	xmin</div>
+																<div class="wid25"
+																	style="background:#97AFD5;color:black;">
+																	ymin</div>
+																<div class="wid25"
+																	style="background:#97AFD5;color:black;">
+																	xmax</div>
+																<div class="wid25"
+																	style="background:#97AFD5;color:black;">
+																	ymax</div>
+															</div>
+															<div class="flex_default wid100">
+																<div class="object_detail_value wid25" id="td_xmin">70
+																</div>
+																<div class="object_detail_value wid25" id="td_ymin">134
+																</div>
+																<div class="object_detail_value wid25" id="td_xmax">134
+																</div>
+																<div class="object_detail_value wid25" id="td_ymax">70
+																</div>
+															</div>
+														</div>
+
+														<div class="flex_column">
+															<div class="flex_default object_detail_head wid100">Location
+															</div>
+															<div class="flex_default wid100">
+																<div class="wid33_3"
+																	style="background:#97AFD5;color:black;">x3d</div>
+																<div class="wid33_3"
+																	style="background:#97AFD5;color:black;">y3d</div>
+																<div class="wid33_3"
+																	style="background:#97AFD5;color:black;">z3d</div>
+															</div>
+															<div class="flex_default wid100">
+																<div class="object_detail_value wid33_3" id="td_x3d">10
+																</div>
+																<div class="object_detail_value wid33_3" id="td_y3d">20
+																</div>
+																<div class="object_detail_value wid33_3" id="td_z3d">30
+																</div>
+															</div>
+														</div>
+
+														<div class="flex_column">
+															<div class="flex_default object_detail_head wid100">
+																Dimension
+															</div>
+															<div class="flex_default wid100">
+																<div class="wid33_3"
+																	style="background:#97AFD5;color:black;">width</div>
+																<div class="wid33_3"
+																	style="background:#97AFD5;color:black;">height</div>
+																<div class="wid33_3"
+																	style="background:#97AFD5;color:black;">length</div>
+															</div>
+															<div class="flex_default wid100">
+																<div class="object_detail_value wid33_3" id="td_width">
+																	2.00
+																</div>
+																<div class="object_detail_value wid33_3" id="td_height">
+																	2.07
+																</div>
+																<div class="object_detail_value wid33_3" id="td_length">
+																	5.05
+																</div>
+															</div>
+														</div>
+
+
+													</div>
+
+													<div class="flex_default" style="margin-bottom:5px;">
+
+
+													</div>
+
+												</div>
+
+											</div>
+
+
+										</div>
+									</div>
+								</div>
+								<!-- <div class="accordion-item">
+								<h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+									<button class="accordion-button collapsed" tabindex="-1" 
+										style="background-color:#202A33; color:#9EA7B1;" type="button"
+										data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo"
+										aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+										Object Table&nbsp;&nbsp;<div id="selected_object">not selected object</div>
+									</button>
+								</h2>
+								<div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse"
+									aria-labelledby="panelsStayOpen-headingTwo">
+									<div class="accordion-body"
+										style="color:black; background-color: #1B1F23; height:150px;  overflow-y: scroll;">
+										<div>
+											<table id="object-table"
+												style="width:100%; color:black; text-align: center;">
+												<thead>
+													<tr style="background: #9EA7B1; color:white;">
+														<th>Object IDs</th>
+														<th>class</th>
+														<th>subclass</th>
+														<th>truncation</th>
+														<th>occlusion</th>
+														<th>tracking_id</th>
+														<th>information</th> -->
+								</tr>
+								</thead>
+								<!-- <tbody style="overflow-y: scroll; height:12em; text-align: center;"> -->
+								<tbody style="text-align: center; background:white;">
+
+								</tbody>
+								</table>
+							</div>
+				</div>
+			</div>
+		</div>
+		<!-- <div class="accordion-item">
+								<h2 class="accordion-header" id="panelsStayOpen-headingThree">
+									<button class="accordion-button collapsed"
+										style="background-color:#202A33; color:white;" type="button"
+										data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree"
+										aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+										도움말(Help)
+									</button>
+								</h2>
+								<div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse"
+									aria-labelledby="panelsStayOpen-headingThree" data-bs-parent="#accordionExample">
+									<div class="accordion-body" style="color:black;">
+										test용이며 핫키에 대한 설명과 여러가지가 들어갈 예정
+									</div>
+								</div>
+							</div> -->
+		</div>
+
+		<!-- <li><a href="#" id="save"><i class="fa fa-floppy-o"></i></a></li>
+				<li><a href="#" id="next_frame"><i class="fas fa-caret-square-right">Next Frame</i></a></li>
+				<li><a href="#" class="selected" id="move"><i class="fa material-icons">3d_rotation</i></a></li>
+                <li><a href="#" id="move2D"><i class="fa fa-pencil"></i></a></li>
+				<li>
+					<button type='button' id='record' style="display: none;">Click to start recording</button>
+				<li></li> -->
+
+		</ul>
+		</nav>
+		</div>
+		</div>
+		<div id="" class="modal" tabindex="-1">
+			<div class="modal-dialog" style="width:700px; max-width: none;">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" style="color:black;">Setting</h5>
+						<button type="button" class="btn-close modal_close" data-bs-dismiss="modal" aria-label="Close"
+							tabindex="-1"></button>
+					</div>
+					<div class="modal-body">
+						<div style="color:black;">speed, rotate min ~ max Value = 1 ~ 5 | default = 1 | step = 0.1 |
+						</div>
+						<div style="color:black;">Shift speed , rotate min ~ max Value = 1 ~ 10 | default = 3 | step =
+							0.1 |</div>
+						<div style="color:black;">GreenPointSize default = 2.5</div>
+						<div style="display:flex; justify-content: space-evenly; align-items: center;">
+							<div
+								style="width:140px; display:flex; justify-content: center; align-items: center; color:black;">
+								KeySpeedValue</div>
+							<input id="speedSlider" type="range" min="1" max="5" tabindex="-1" value="1" step="0.1" />
+							<div id="speedValueP"
+								style="display:flex; justify-content: center; align-items: center; color:black; width:30px;">
+								1</div>
+						</div>
+
+						<div style="display:flex; justify-content: space-evenly; align-items: center;">
+							<div
+								style="width:140px; display:flex; justify-content: center; align-items: center; color:black;">
+								KeyShiftSpeedValue</div>
+							<input id="speedShiftSlider" type="range" min="1" max="10" tabindex="-1" value="3"
+								step="0.1" />
+							<div id="speedShiftValueP"
+								style="display:flex; justify-content: center; align-items: center; color:black; width:30px;">
+								3</div>
+						</div>
+
+						<div style="display:flex; justify-content: space-evenly; align-items: center;">
+							<div
+								style="width:140px; display:flex; justify-content: center; align-items: center; color:black;">
+								KeyRotateValue</div>
+							<input id="rotateSlider" type="range" min="1" max="5" tabindex="-1" value="1" step="0.1" />
+							<div id="rotateValueP"
+								style="display:flex; justify-content: center; align-items: center; color:black; width:30px;">
+								1</div>
+						</div>
+
+						<div style="display:flex; justify-content: space-evenly; align-items: center;">
+							<div
+								style="width:140px; display:flex; justify-content: center; align-items: center; color:black;">
+								KeyShiftRotateValue</div>
+							<input id="rotateShiftSlider" type="range" min="1" max="10" tabindex="-1" value="3"
+								step="0.1" />
+							<div id="rotateShiftValueP"
+								style="display:flex; justify-content: center; align-items: center; color:black; width:30px;">
+								3</div>
+						</div>
+
+						<div style="display:flex; justify-content: space-evenly; align-items: center;">
+							<div
+								style="width:140px; display:flex; justify-content: center; align-items: center; color:black;">
+								GreenPointCloudSize</div>
+							<input id="PSSlider" type="range" min="1" max="20" tabindex="-1" value="2.3" step="0.1" />
+							<div id="PSSliderP"
+								style="display:flex; justify-content: center; align-items: center; color:black; width:30px;">
+								2.3</div>
+						</div>
+
+						<!-- <div style="display:flex; justify-content: space-evenly; align-items: center;">
+						<div style="display:flex; justify-content: center; align-items: center; color:black;">LidarDragValue</div>
+						<input id="DragSlider" type="range" min="1" max="100" tabindex="-1" value="20" />
+						<div id="DragValueP" style="display:flex; justify-content: center; align-items: center; color:black; width:30px;">20</div>
+					</div> -->
+						<!-- <p>Modal body text goes here.</p> -->
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary modal_close" data-bs-dismiss="modal"
+							tabindex="-1">Close</button>
+						<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- <div id="info">LiDAR Annotator</div> -->
+		<div id="draw_bounding_box_reminder" style="display:none">
+			<p></p>
+		</div>
+		<div id="cut"
+			style="width:100vw; height:100vh; background:black; opacity:0.4; position:absolute; left:0; top:0; z-index:99; display:none;">
+
+		</div>
+		</div>
+
+
+		<script>
+			var fs = require('fs');
+		</script>
+		<!-- 미정 -->
+		<script src="../public/js/Lidar2ImageManager.js" defer></script>		
+		<script src="../public/js/ClassArrayManager.js" defer></script>		
+
+		<!-- libs -->
+		<script src="../public/js/libs/three.js" defer></script>
+		<script src="../public/js/libs/OrbitControls.js" defer></script>
+		<script src="../public/js/libs/Geometry.js" defer></script>
+		<script src="../public/js/libs/FontLoader.js" defer></script>
+		<script src="../public/js/libs/TextGeometry.js" defer></script>
+		<script src="../public/js/libs/PCDLoader.js" defer></script>
+		<script src="../public/js/libs/Detector.js" defer></script>
+		<script src="../public/js/libs/stats.min.js" defer></script>
+		<script src="../public/js/libs/FileSaver.min.js" defer></script>
+		<script src="../public/js/libs/dat.gui.min.js" defer></script>
+		<script src="../public/js/libs/math.js" defer></script>
+		<script src="../public/js/libs/jquery.js" defer></script>
+		<script src="../public/js/libs/bootstrap.js" defer></script>
+
+		<!-- model -->
+		<script src="../public/js/model/FileModel.js" defer></script>
+		<script src="../public/js/model/KeyEventModel.js" defer></script>
+		<script src="../public/js/model/BoxModel.js" defer></script>
+		<script src="../public/js/model/FrameModel.js" defer></script>
+		<script src="../public/js/model/MouseEventModel.js" defer></script>
+		<script src="../public/js/model/SceneModel.js" defer></script>
+		<script src="../public/js/model/MainModel.js" defer></script>
+
+		<!-- view -->
+		<script src="../public/js/view/MainView.js" defer></script>
+		
+		<!-- controller -->
+		<script src="../public/js/controller/BoxController.js" defer></script>
+		<script src="../public/js/controller/BoxEventController.js" defer></script>
+		<script src="../public/js/controller/KeyEventController.js" defer></script>
+		<script src="../public/js/controller/MouseEventController.js" defer></script>
+		<script src="../public/js/controller/EventController.js" defer></script>
+		<script src="../public/js/controller/FileController.js" defer></script>
+		<script src="../public/js/controller/FrameController.js" defer></script>
+		<script src="../public/js/controller/ImageController.js" defer></script>
+		<script src="../public/js/controller/PointCloudController.js" defer></script>
+		<script src="../public/js/controller/SceneController.js" defer></script>
+		<script src="../public/js/controller/MainController.js" defer></script>		
+
+		
+
+		<script src="../public/js/index.js" defer></script>
+	</body>
+
+</html>

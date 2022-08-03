@@ -1,0 +1,296 @@
+/* font */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+* { font-family: Noto Sans KR; color: #333; }
+
+/* reset */
+body, ul, p {
+	padding: 0;
+	margin: 0;
+}
+a {
+	text-decoration: none;
+}
+li { 
+	list-style: none;
+}
+
+/* common */
+.cm_btn01 {
+	border-radius: 5px;
+	padding: 5px 15px;
+	cursor: pointer;
+}
+
+.cm_select01 {
+	width: 100%;
+	height: 35px;
+	padding: 5px;
+}
+
+.cm_bg_color01 {
+	background-color: #173455;
+}
+.cm_bg_color02 {
+	background-color: #285b8b;
+}
+
+#wrap {
+	position: relative;
+}
+header {
+	position: absolute;
+	top:0;
+	left: 0;
+	z-index: 999;
+	width: 100%;
+	background-color: #000;
+	height: 70px;
+	display: flex;
+	align-items: center;
+	padding: 20px;
+	box-sizing: border-box;
+}
+header ul {
+	display: flex;
+}
+header ul li {
+	margin-right: 15px;
+}
+header input[type="file"] {
+	display: none;
+}
+header button,
+header .file_import {
+	background-color: transparent;
+	border: 0;
+	color: #fff;
+	cursor: pointer;
+}
+header .load_file {
+	border:0px; 
+	color:#fff; 
+	width:100%;
+}
+/* header ul li a {
+	color: #ccc;
+}
+header ul li a:hover {
+	color: #fff;
+} */
+main {
+	padding-top: 70px;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	position: relative;
+}
+main .cut_layer {
+	background-color: rgba(0,0,0,0.5);
+	width: 100%;
+	height: 100vh;
+	position: absolute;
+	top:0;
+	left: 0;
+	z-index: 888;
+	display: none;
+}
+main .frame_wrap {
+	display: grid;
+	grid-template-rows: repeat(2, 1fr);
+}
+main .threeD_frame {
+	background-color: #eee;
+	height: calc((100vh - 70px) / 2);
+}
+
+main .threeD_frame canvas{
+	width: 100%;
+	height: calc((100vh - 70px) / 2);
+}
+
+main .frame_info .img_frame {
+	height: calc((100vh - 70px) / 2);
+}
+
+main .frame_info .img_frame .img_box {
+	background-color: #bbb;
+	height: calc(((100vh - 70px) / 2) - 45px);
+	position: relative;
+}
+main .frame_info .img_frame .img_box canvas {
+	width: 100%;
+	height: calc(((100vh - 70px) / 2) - 45px);
+	position:absolute;
+	top:0;
+	left:0;
+}
+
+main .frame_info .img_frame .img_info {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding:0 20px;
+	background-color: #f4f4f4;
+	border-top: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+}
+main .frame_info .img_frame .paging {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0 10px;
+	height: 45px;
+
+}
+main .frame_info .img_frame .paging button {
+	display: inline-flex;
+	padding: 0;
+	border: 0;
+	background-color: transparent;
+	cursor: pointer;
+}
+main .frame_info .img_frame .paging button img {
+	width: 30px;
+}
+
+/* 내용 담긴 테이블 */
+main .frame_info .threeD_info {
+	padding: 15px;
+}
+
+main .frame_info .threeD_info .title {
+	font-weight: 600;
+	font-size: 18px;
+	margin-bottom: 15px;
+}
+main .frame_info .threeD_info .cm_table01 {
+	font-size: 15px;
+	width: 100%;
+	border-collapse: collapse;
+	border: 1px solid #e0e0e0;
+}
+main .frame_info .threeD_info .cm_table01.read {
+	margin-top: 20px;
+}
+main .frame_info .threeD_info .cm_table01 tr {
+	height: 60px;
+	border-bottom: 1px solid #e0e0e0;
+}
+main .frame_info .threeD_info .cm_table01 th {
+	background-color: #eee;
+	font-weight: 500;
+	width: 150px;
+	font-size: 14px;
+}
+/* main .frame_info .threeD_info .cm_table01 tr:nth-child(2) th {
+	font-size: 13px;
+} */
+main .frame_info .threeD_info .cm_table01 td {
+	padding: 0 15px;
+	font-size: 14px;
+	width: 240px;
+}
+main .frame_info .threeD_info .cm_table01 .frame_wrap {
+	display: flex;
+}
+main .frame_info .threeD_info .cm_table01 .frame_wrap button {
+	border: 0;
+	padding: 5px;
+}
+main .frame_info .threeD_info .cm_table01 .frame_wrap {
+	display: flex;
+
+}
+main .frame_info .threeD_info .cm_table01 .frame_wrap .value_wrap {
+	flex-grow: 1;
+	text-align: center;
+}
+main .frame_info .threeD_info .cm_table01 .frame_wrap .value_wrap .title {
+	font-size: 13px;
+	margin-bottom: 0;
+}
+/* main .frame_info .threeD_info .cm_table01 .frame_wrap .up_down_wrap {
+	display: flex;
+	flex-direction: column;
+}
+main .frame_info .threeD_info .cm_table01 .frame_wrap .up_down_wrap button.up_btn {
+	background: url('../images/up_ico.svg') no-repeat 50% 50% #c9c9c9;
+	background-size: contain;
+	width: 20px;
+	height: 50%;
+}
+main .frame_info .threeD_info .cm_table01 .frame_wrap .up_down_wrap button.down_btn {
+	background: url('../images/down_ico.svg') no-repeat 50% 50% #c9c9c9;
+	background-size: contain;
+	width: 20px;
+	height: 50%;
+} */
+
+main .frame_info .threeD_info .cm_table01 button {
+	height: 40px;
+	background-color: #376092;
+	color: #fff;
+	font-size: 13px;
+	border:0;
+}
+main .frame_info .threeD_info .cm_table01 input {
+	width: 100%;
+	height: 35px;
+	box-sizing: border-box;
+	padding: 10px;
+}
+
+main .cm_table01 .checks input[type="checkbox"] { display: none; }
+main .cm_table01 .checks input[type="checkbox"] + label {
+	margin-right: 15px;
+	padding-left: 22px;
+	position: relative;
+	cursor: pointer;
+}
+main .cm_table01 .checks input[type="checkbox"] + label span {
+	width: 17px;
+	height: 17px;
+	background: url('../images/checkbox_off.svg') no-repeat 50% 50%;
+	background-size: cover;
+	display: inline-block;
+	margin-right: 10px;
+	position: absolute;
+	top:2px;
+	left:0;
+}
+main .cm_table01 .checks input[type="checkbox"]:checked + label span {
+	background: url('../images/checkbox_on.svg') no-repeat 50% 50%;
+	background-size: cover;
+}
+
+main .cm_table01 .checks input[type="radio"] { display: none; }
+main .cm_table01 .checks input[type="radio"] + label {
+	margin-right: 15px;
+	padding-left: 22px;
+	position: relative;
+	cursor: pointer;
+}
+main .cm_table01 .checks input[type="radio"] + label span {
+	width: 17px;
+	height: 17px;
+	background: url('../images/radio_off.svg') no-repeat 50% 50%;
+	background-size: cover;
+	display: inline-block;
+	margin-right: 10px;
+	position: absolute;
+	top:2px;
+	left:0;
+}
+main .cm_table01 .checks input[type="radio"]:checked + label span {
+	background: url('../images/radio_on.svg') no-repeat 50% 50%;
+	background-size: cover;
+}
+main .cm_table01 .buttons {
+	display: grid;
+	align-items: center;
+	gap: 0 10px;
+	grid-template-columns: repeat(5,1fr);
+
+}
+/* main .cm_table01 .buttons button:nth-child(1) {
+	width: 150px;
+} */

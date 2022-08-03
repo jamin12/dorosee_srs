@@ -1,0 +1,384 @@
+/* font */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+/* common */
+* { 
+    font-family: 'Pretendard';
+    font-size: 14px;
+}
+*:focus {
+    outline: 0;
+}
+a {
+    text-decoration: none;
+}
+p {
+    margin: 0;
+}
+body {
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+button {
+    background-color: transparent;
+    border: 0;
+    cursor: pointer;
+    border-radius: 3px;
+    padding: 0;
+    font-size: 15px;
+}
+input {
+    border-radius: 2px;
+    border: 0;
+}
+canvas {
+    width: 100%;
+    height: 100%;
+}
+#wrap {
+    position: relative;
+}
+
+/* common btn */
+.cm_btn00 {
+    color: #959aa5;
+}
+.cm_btn01 {
+    background-color: #4e4e4e;
+    color: #fff;
+}
+.cm_btn02 {
+    background-color: #4e4e4e;
+    color: #fff;
+}
+
+:root {
+    --main_bg01: #3c404c;
+    --main_bg02: #25282f;
+    --main_bg03: #272a34;
+    --main-color: #285b8b;
+}
+
+
+/* header */
+header {
+    background-color:var(--main_bg01);
+    padding: 10px 15px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+}
+header .btn_frame {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+}
+header .btn_frame .cm_btn01 {
+    min-width: 70px;
+    height: 25px;
+}
+header .btn_frame .threeD_popup_btn {
+    display: flex;
+    cursor: pointer;
+}
+header .btn_frame .threeD_popup_btn img {
+    /* width: 24px; */
+    filter: invert(1) opacity(0.7);
+}
+header .btn_frame #polygonCreateBtn {
+    width: 20px;
+}
+header .page_frame {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #fff;
+}
+header .page_frame button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+header .page_frame button img {
+    width: 28px;
+    filter: invert(0.7);
+}
+header .page_frame input {
+    width: 60px;
+    height: 20px;
+    border: 0;
+    text-align: center;
+    font-size: 13px;
+}
+header .page_frame input::placeholder {
+    color: #bbb;
+}
+header .page_frame #frameIndex {
+    margin: 0 5px;
+} 
+
+/* main */
+.main_frame {
+    height: calc(100vh - 50px);
+    display: flex;
+    background-color: #2a2a2a;
+}
+.main_frame .side_btn_frame {
+    background-color: var(--main_bg03);
+    display: inline-flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px 0;
+    box-sizing: border-box;
+    width: 65px;
+    height: 100%;
+}
+.main_frame .side_btn_frame .cm_btn01 {
+    width: 100%;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.main_frame .img_frame {
+    display: flex;
+    width: calc(80% - 65px);
+}
+.main_frame .img_frame .threeD_frame {
+    height: 100%;
+    background-color: #eee;
+    flex-grow: 1;
+    width: 50%;
+}
+
+.main_frame .img_frame .img_wrap  {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    width: 50%;
+}
+.main_frame .img_frame .img_wrap .threeD_frame_half {
+    background-color: #ccc;
+    height: 50%;
+}
+.main_frame .img_frame .img_wrap .twoD_frame {
+    background-color: #aaa;
+    height: 50%;
+}
+.main_frame .text_frame {
+    background-color: var(--main_bg02);
+    flex-grow: 1;
+    overflow: auto;
+    padding-right: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 5px;
+    width: 345px;
+}
+.main_frame .text_frame::-webkit-scrollbar {
+    width: 10px;
+}
+.main_frame .text_frame::-webkit-scrollbar-thumb {
+    background-color: var(--main_bg01);
+}
+.main_frame .text_frame::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+.main_frame .text_frame .info_box .obj_name {
+    background-color: var(--main_bg02);
+    height: 50px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.main_frame .text_frame .info_box .obj_name input[type="checkbox"] {
+    display: none;
+}
+.main_frame .text_frame .info_box .obj_name input[type="checkbox"] + label {
+    display: flex;
+}
+.main_frame .text_frame .info_box .obj_name input[type="checkbox"] + label span {
+    display: inline-block;
+    background: url('../images/object_select.svg') no-repeat 50% 50%;
+    background-size: cover;
+    width: 20px;
+    height: 20px;
+    filter: invert(0.4);
+    margin-right: 5px;
+    cursor: pointer;
+}
+.main_frame .text_frame .info_box .obj_name input[type="checkbox"]:checked + label span {
+    filter: invert(1);
+}
+.main_frame .text_frame .info_box.active .car_cont {
+    height: 610px;
+}
+.main_frame .text_frame .info_box .obj_name p {
+    flex-grow: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+.main_frame .text_frame .info_box .obj_name .fold_btn {
+    display: flex;
+    transform: rotate(180deg);
+}
+.main_frame .text_frame .info_box .obj_name .fold_btn img {
+    width: 26px;
+    filter: invert(0.4);
+}
+.main_frame .text_frame .info_box .car_cont {
+    padding:0 10px;
+    height: 0;
+    overflow: hidden;
+    transition: 0.5s;
+    background-color: var(--main_bg01);
+}
+
+.main_frame .text_frame .info_box {
+    border: 1px solid var(--main_bg01);
+    color: #fff;
+    cursor: pointer;
+    transition: 0.5s;
+}
+.main_frame .text_frame .info_box.active {
+    background-color: var(--main_bg01);
+}
+.main_frame .text_frame .info_box .text {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    border-bottom: 1px solid var(--main_bg03);
+}
+.main_frame .text_frame .info_box .text .subject {
+    width: 120px;
+    display: flex;
+    align-items: center;
+    
+}
+.main_frame .text_frame .info_box .text .cont {
+    width: calc(100% - 120px);
+    flex-grow: 1;
+}
+
+.main_frame .text_frame .info_box .text .cont input {
+    padding: 10px;
+    box-sizing: border-box;
+    height: 30px;
+    width: 100%;
+}
+.main_frame .text_frame .info_box .text .cont select {
+    width: 100%;
+    height: 30px;
+}
+.main_frame .text_frame .info_box .text .cont table {
+    width: 100%;
+    text-align: center;
+    
+}
+.main_frame .text_frame .info_box .text .cont table th {
+    color: #aaa;
+    font-weight: 400;
+    font-size: 12px;
+}
+
+/* popup */
+.popup_layer {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 999;
+    display: none;
+}
+.popup_layer.active {
+    display: flex;
+}
+.popup_layer .img_popup {
+    background-color: var(--main_bg02);
+    width: 90%;
+}
+.popup_layer .img_popup .popup_header  {
+    border-bottom: 1px solid #363636;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+.popup_layer .img_popup .popup_header .close_btn img {
+    width: 30px;
+    filter: contrast(0);
+}
+.popup_layer .img_popup .popup_content {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(3,1fr);
+    padding: 20px;
+}
+.popup_layer .img_popup .popup_content .threeD_frame {
+    width: 100%;
+    height: 450px;
+    background-color: #eee;
+}
+
+
+/* login */
+.login {
+    background-color: var(--main_bg01);
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.login .login_box {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 30px;
+    box-sizing: border-box;
+    width: 300px;
+}
+.login .login_box .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+.login .login_box .logo img {
+    height: 50px;
+}
+.login .login_box .input_wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.login .login_box .input_wrap input {
+    background-color: #eee;
+    padding: 10px;
+    font-size: 13px;
+}
+.login .login_box .cm_btn02 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 40px;
+    margin-top: 15px;
+    background-color: var(--main-color);
+}
+
+.top_icon {
+    width:26px;
+}

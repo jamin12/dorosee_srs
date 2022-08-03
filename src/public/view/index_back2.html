@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <title>LiDAR Annotator</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+    <link rel="stylesheet" href="../public/css/toolStyle.css" />
+  </head>
+
+  <body>
+    <div id="wrap">
+      <header class="cm_bg_color01">
+        <ul>
+          <li>
+            <button class="file_import" tabindex="-1">
+              <label for="folderUploadSelect" class="load_file">File Import</label>
+              <input
+                id="folderUploadSelect"
+                type="file"
+                tabindex="-1"
+                webkitdirectory
+                directory
+                value=""
+              />
+            </button>
+          </li>
+          <li><button tabindex="-1" id="save_json">Save JSON</button></li>
+        </ul>
+      </header>
+      <main>
+        <div class="cut_layer" id="cut"></div>
+        <!-- [왼쪽] 3d 프레임 -->
+        <div class="frame_wrap">
+          <div class="threeD_frame">
+            <canvas id="main_canvas"></canvas>
+            <!-- 여기다가 왼쪽 위에 3d 박스 -->
+          </div>
+          <div class="threeD_frame">
+            <canvas id="sub_canvas"></canvas>
+            <!--여기다가 왼쪽 아래 3d 박스 -->
+          </div>
+        </div>
+        <!--// [왼쪽] 3d 프레임 -->
+
+        <!-- [오른쪽] 3d 이미지 & 테이블 -->
+        <div class="frame_info">
+          <div class="img_frame">
+            <div class="img_box">
+              <img
+                id="img"
+                width="1920"
+                height="1080"
+                style="width: 100%; height: 100%; background-color: grey"
+                src="../public/images/noimage.png"
+              />
+              <!-- 여기다가 오른쪽 이미지 띄어주세요 -->
+              <canvas id="image_2D_canvas" width="1920" height="1080"></canvas>
+              <canvas
+                id="image_2D_canvas_select"
+                width="1920"
+                height="1080"
+              ></canvas>
+              <canvas
+                id="save_canvas"
+                width="1920"
+                height="1080"
+                style="display: none"
+              ></canvas>
+              <canvas
+                id="image2DCanvasOnly2D"
+                width="1920"
+                height="1080"
+                style="
+                  position: absolute;
+                  top: 0px;
+                  left: 0px;
+                  width: 100%;
+                  height: 100%;
+                  z-index: 999;
+                "
+              >
+              </canvas>
+              <canvas
+                id="image2DCanvasBlurRects"
+                width="1920"
+                height="1080"
+                style="
+                  position: absolute;
+                  top: 0px;
+                  left: 0px;
+                  width: 100%;
+                  height: 100%;
+                  /* z-index: 999; */
+                "
+              >
+              </canvas>
+              <canvas
+                id="image2DCanvasForBlur"
+                width="1920"
+                height="1080"
+                style="position: absolute; top: 0px; left: 0px; display: none"
+              ></canvas>
+            </div>
+            <!-- <div class="img_info">
+						<div class="img_subject">
+							<p id="img_name">파일이름</p>
+						</div>
+						<div class="paging">
+							<button class="prev" id="prev_btn"><img src="../public/images/arrow_prev.svg" alt=""></button>
+							<div class="now_page" id="frame_index"> 1 / File Length</div>
+							<button class="next" id="next_btn"><img src="../public/images/arrow_next.svg" alt=""></button>
+						</div>
+						<canvas id="image_2D_canvas" width="1920" height="1080"
+							style="position:absolute; top:0px; left:0px; display:none; z-index:999"></canvas>
+						<canvas id="image_2D_canvas_select" width="1920" height="1080"
+							style="position:absolute; top:0px; left:0px; display:none;"></canvas>
+						<canvas id="image2DCanvasOnly2D" width="1920" height="1080"
+							style="position:absolute; top:0px; left:0px; width:100%; height:100%;"></canvas>
+						<canvas id="image2DCanvasForBlur" width="1920" height="1080"
+							style="position:absolute; top:0px; left:0px;display:none;"></canvas>
+						<canvas id="save_canvas" width="1920" height="1080" style="display:none;"></canvas>
+					</div> -->
+          </div>
+
+          <div class="threeD_info">
+            <p class="title">Object Detail</p>
+            <table class="cm_table01">
+              <tr>
+                <th>Display</th>
+                <td colspan="5">
+                  <div class="checks">
+                    <input type="checkbox" id="display_check01" checked /><label
+                      for="display_check01"
+                      ><span></span>Cuboid</label
+                    >
+                    <input type="checkbox" id="display_check02" /><label
+                      for="display_check02"
+                      ><span></span>Box</label
+                    >
+                    <input type="checkbox" id="display_check03" /><label
+                      for="display_check03"
+                      ><span></span>Selected</label
+                    >
+                    <input type="checkbox" id="display_check04" /><label
+                      for="display_check04"
+                      ><span></span>Crop</label
+                    >
+                  </div>
+                  <div style="display: flex">
+                    <input
+                      type="text"
+                      id="frameIndexInput"
+                      placeholder="frame"
+                      style="width: 30%"
+                    />
+                    <div id="frameIndex">0/fileLength</div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <!-- <th>not selected object_id now!</th> -->
+                <td colspan="6">
+                  <div class="buttons">
+                    <button
+                      class="cm_btn01"
+                      tabindex="-1"
+                      id="WarningSkipButton"
+                    >
+                      Warning Enable
+                    </button>
+                    <button
+                      class="cm_btn01"
+                      tabindex="-1"
+                      id="object_property_save"
+                    >
+                      Save
+                    </button>
+                    <button class="cm_btn01" tabindex="-1" id="copyButton">
+                      Copy
+                    </button>
+                    <button class="cm_btn01" tabindex="-1" id="clearButton">
+                      Clean
+                    </button>
+                    <button class="cm_btn01" tabindex="-1" id="settingButton">
+                      Setting
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            <table class="cm_table01 read">
+              <tr>
+                <th>id</th>
+                <td><input type="text" id="trackingIDInput" /></td>
+                <th>sub_id</th>
+                <td><input type="text" id="subTrackingIDInput" /></td>
+                <th>category</th>
+                <td>
+                  <select class="cm_select01" id="select_classes">
+                    <option value="">자동차</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <th>obj_type</th>
+                <td>
+                  <select class="cm_select01">
+                    <option value="">동적 객체</option>
+                    <option value="">주행환경 객체</option>
+                  </select>
+                </td>
+                <th>atypical_yn</th>
+                <td>
+                  <select class="cm_select01">
+                    <option value="">비정형 객체</option>
+                    <option value="">정형 객체</option>
+                  </select>
+                </td>
+                <th>camera_visibility</th>
+                <td>
+                  <select class="cm_select01">
+                    <option value="">식별 가능</option>
+                    <option value="">식별 불가</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <th>Sub_Class</th>
+                <td>
+                  <select class="cm_select01" id="select_subclasses">
+                    <option value="">나중에넣어줌</option>
+                  </select>
+                </td>
+              </tr>
+            </table>
+
+            <table class="cm_table01 read">
+              <tr>
+                <th>location</th>
+                <td>
+                  <div class="frame_wrap">
+                    <div class="value_wrap">
+                      <p class="title">x3d</p>
+                      <p>70</p>
+                    </div>
+                    <div class="value_wrap">
+                      <p class="title">y3d</p>
+                      <p>130</p>
+                    </div>
+                    <div class="value_wrap">
+                      <p class="title">z3d</p>
+                      <p>130</p>
+                    </div>
+                  </div>
+                </td>
+                <th>box</th>
+                <td>
+                  <div class="frame_wrap">
+                    <div class="value_wrap">
+                      <p class="title">xmin</p>
+                      <p>70</p>
+                    </div>
+                    <div class="value_wrap">
+                      <p class="title">ymin</p>
+                      <p>130</p>
+                    </div>
+                    <div class="value_wrap">
+                      <p class="title">xmax</p>
+                      <p>130</p>
+                    </div>
+                    <div class="value_wrap">
+                      <p class="title">ymax</p>
+                      <p>70</p>
+                    </div>
+                  </div>
+                </td>
+                <th>dimension</th>
+                <td>
+                  <div class="frame_wrap">
+                    <div class="value_wrap">
+                      <p class="title">width</p>
+                      <p>70</p>
+                    </div>
+                    <div class="value_wrap">
+                      <p class="title">height</p>
+                      <p>130</p>
+                    </div>
+                    <div class="value_wrap">
+                      <p class="title">length</p>
+                      <p>130</p>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <th>rotation_y</th>
+                <td>00</td>
+                <th>2d</th>
+                <td>
+                  <div class="frame_wrap">
+                    <div class="value_wrap">
+                      <p class="title">width</p>
+                      <p>70</p>
+                    </div>
+                    <div class="value_wrap">
+                      <p class="title">height</p>
+                      <p>130</p>
+                    </div>
+                    <div class="value_wrap">
+                      <p class="title">points</p>
+                      <p>130</p>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+            <!-- <table class="cm_table01">
+							<tr>
+								<th>Display</th>
+								<td colspan="5">
+									<div class="checks">
+										<input type="checkbox" id="display_check01"  checked><label for="display_check01"><span></span>Cuboid</label>
+										<input type="checkbox" id="display_check02"><label for="display_check02"><span></span>Box</label>
+										<input type="checkbox" id="display_check03"><label for="display_check03"><span></span>Selected</label>
+										<input type="checkbox" id="display_check04"><label for="display_check04"><span></span>Crop</label>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>not selected object_id now!</th>
+								<td colspan="5">
+									<div class="buttons">
+										<button class="cm_btn01">Warning Enable</button>
+										<button class="cm_btn01">Save</button>
+										<button class="cm_btn01">Copy</button>
+										<button class="cm_btn01">Clean</button>
+										<button class="cm_btn01">Setting</button>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>Class</th>
+								<td>
+									<select class="cm_select01">
+										<option value="">Car</option>
+										<option value="">Bus</option>
+										<option value="">HeavyEquipment</option>
+										<option value="">Cyclist</option>
+										<option value="">Motorcycle</option>
+										<option value="">PersonalMobility</option>
+										<option value="">Misc</option>
+									</select>
+								</td>
+								<th>SubClass</th>
+								<td>
+									<select class="cm_select01">
+										<option value="">Normal</option>
+										<option value="">Emergency</option>
+										<option value="">SchoolBus</option>
+									</select>
+								</td>
+								<th>Truncation</th>
+								<td>
+									<select class="cm_select01">
+										<option value="">0.1</option>
+										<option value="">0.2</option>
+										<option value="">0.3</option>
+										<option value="">0.4</option>
+										<option value="">0.5</option>
+										<option value="">0.6</option>
+										<option value="">0.7</option>
+										<option value="">0.8</option>
+										<option value="">0.9</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<th>Occlustion</th>
+								<td colspan="5">
+									<div class="checks">
+										<input type="radio" name="radio01" id="occ_radio01" checked><label for="occ_radio01"><span></span>0</label>
+										<input type="radio" name="radio01" id="occ_radio02"><label for="occ_radio02"><span></span>1</label>
+										<input type="radio" name="radio01" id="occ_radio03"><label for="occ_radio03"><span></span>2</label>
+										<input type="radio" name="radio01" id="occ_radio04"><label for="occ_radio04"><span></span>3</label>
+										<input type="radio" name="radio01" id="occ_radio05"><label for="occ_radio05"><span></span>4</label>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>Tracking_id</th>
+								<td colspan="2">
+									<div class="frame_wrap">
+										<input type="text">
+										<div class="up_down_wrap">
+											<button class="up_btn"></button>
+											<button class="down_btn"></button>
+										</div>
+									</div>
+								</td>
+								<th>Set New Tracking_id</th>
+								<td colspan="2">
+									<input type="text">
+								</td>
+							</tr>
+						</table> -->
+          </div>
+        </div>
+        <!--// [오른쪽] 3d 이미지 & 테이블 -->
+      </main>
+    </div>
+
+    <style></style>
+
+    <script>
+      var fs = require("fs");
+    </script>
+    <!-- 미정 -->
+    <script src="../public/js/Lidar2ImageManager.js" defer></script>
+    <script src="../public/js/ClassArrayManager.js" defer></script>
+
+    <!-- libs -->
+    <script src="../public/js/libs/three.js" defer></script>
+    <script src="../public/js/libs/OrbitControls.js" defer></script>
+    <script src="../public/js/libs/Geometry.js" defer></script>
+    <script src="../public/js/libs/FontLoader.js" defer></script>
+    <script src="../public/js/libs/TextGeometry.js" defer></script>
+    <script src="../public/js/libs/PCDLoader.js" defer></script>
+    <script src="../public/js/libs/Detector.js" defer></script>
+    <script src="../public/js/libs/stats.min.js" defer></script>
+    <script src="../public/js/libs/FileSaver.min.js" defer></script>
+    <script src="../public/js/libs/dat.gui.min.js" defer></script>
+    <script src="../public/js/libs/math.js" defer></script>
+    <script src="../public/js/libs/jquery.js" defer></script>
+    <script src="../public/js/libs/bootstrap.js" defer></script>
+    <script src="../public/js/libs/TransformControls.js" defer></script>
+    <!-- model -->
+    <script src="../public/js/model/AnnotationModel.js" defer></script>
+    <script src="../public/js/model/JsonModel.js" defer></script>
+    <script src="../public/js/model/FileModel.js" defer></script>
+    <script src="../public/js/model/KeyEventModel.js" defer></script>
+    <script src="../public/js/model/BoxModel.js" defer></script>
+    <script src="../public/js/model/FrameModel.js" defer></script>
+    <script src="../public/js/model/MouseEventModel.js" defer></script>
+    <script src="../public/js/model/SceneModel.js" defer></script>
+    <script src="../public/js/model/MainModel.js" defer></script>
+
+    <!-- view -->
+    <script src="../public/js/view/MainView.js" defer></script>
+
+    <!-- controller -->
+    <script src="../public/js/controller/BoxController.js" defer></script>
+    <script src="../public/js/controller/BoxEventController.js" defer></script>
+    <script src="../public/js/controller/KeyEventController.js" defer></script>
+    <script
+      src="../public/js/controller/MouseEventController.js"
+      defer
+    ></script>
+    <script src="../public/js/controller/EventController.js" defer></script>
+    <script src="../public/js/controller/FileController.js" defer></script>
+    <script src="../public/js/controller/FrameController.js" defer></script>
+    <script src="../public/js/controller/ImageController.js" defer></script>
+    <script
+      src="../public/js/controller/PointCloudController.js"
+      defer
+    ></script>
+    <script src="../public/js/controller/SceneController.js" defer></script>
+    <script src="../public/js/controller/MainController.js" defer></script>
+
+    <script src="../public/js/index.js" defer></script>
+  </body>
+</html>

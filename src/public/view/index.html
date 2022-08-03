@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../public/css/style.css" />
+    <!-- <link rel="stylesheet" href="../public/css/toolStyle.css" /> -->
+    <script defer>
+      // var fs = require("fs");
+    </script>
+    <!-- 미정 -->
+    <script src="../public/js/Lidar2ImageManager.js" defer></script>
+    <script src="../public/js/ClassArrayManager.js" defer></script>
+    <script src="../public/js/layout/layout.js" defer></script>
+    <!-- libs -->
+    <script src="../public/js/libs/three.js" defer></script>
+    <script src="../public/js/libs/OrbitControls.js" defer></script>
+    <script src="../public/js/libs/Geometry.js" defer></script>
+    <script src="../public/js/libs/FontLoader.js" defer></script>
+    <script src="../public/js/libs/TextGeometry.js" defer></script>
+    <script src="../public/js/libs/PCDLoader.js" defer></script>
+    <script src="../public/js/libs/Detector.js" defer></script>
+    <script src="../public/js/libs/stats.min.js" defer></script>
+    <script src="../public/js/libs/FileSaver.min.js" defer></script>
+    <script src="../public/js/libs/dat.gui.min.js" defer></script>
+    <script src="../public/js/libs/math.js" defer></script>
+    <script src="../public/js/libs/jquery.js" defer></script>
+    <script src="../public/js/libs/bootstrap.js" defer></script>
+    <script src="../public/js/libs/TransformControls.js" defer></script>
+
+    <!-- model -->
+    <script src="../public/js/model/AnnotationModel.js" defer></script>
+    <script src="../public/js/model/JsonModel.js" defer></script>
+    <script src="../public/js/model/FileModel.js" defer></script>
+    <script src="../public/js/model/KeyEventModel.js" defer></script>
+    <script src="../public/js/model/BoxModel.js" defer></script>
+    <script src="../public/js/model/BoxListModel.js" defer></script>
+    <script src="../public/js/model/FrameModel.js" defer></script>
+    <script src="../public/js/model/MouseEventModel.js" defer></script>
+    <script src="../public/js/model/SceneModel.js" defer></script>
+    <script src="../public/js/model/MainModel.js" defer></script>
+
+    <!-- view -->
+    <script src="../public/js/view/MainView.js" defer></script>
+
+    <!-- controller -->
+    <script src="../public/js/controller/BoxController.js" defer></script>
+    <script src="../public/js/controller/BoxEventController.js" defer></script>
+    <script src="../public/js/controller/BoxListController.js" defer></script>
+    <script src="../public/js/controller/KeyEventController.js" defer></script>
+    <script src="../public/js/controller/MouseEventController.js" defer></script>
+    <script src="../public/js/controller/EventController.js" defer></script>
+    <script src="../public/js/controller/FileController.js" defer></script>
+    <script src="../public/js/controller/FrameController.js" defer></script>
+    <script src="../public/js/controller/ImageController.js" defer></script>
+    <script src="../public/js/controller/PointCloudController.js" defer></script>
+    <script src="../public/js/controller/SceneController.js" defer></script>
+    <script src="../public/js/controller/MainController.js" defer></script>
+
+    <script src="../public/js/index.js" defer></script>
+
+    <title>3D Tool Main</title>
+  </head>
+
+  <body>
+    <div id="wrap" class="main">
+      <header>
+        <div class="btn_frame">
+          <button class="cm_btn00" tabindex="-1">
+            <label for="folderUploadSelect" class="load_file"><img class="top_icon"
+                src="../public/images/folder.svg" /></label>
+            <input id="folderUploadSelect" type="file" tabindex="-1" webkitdirectory directory value=""
+              style="display: none" />
+          </button>
+          <img id="saveJson" class="top_icon" src="../public/images/saveJson.svg"></img>
+          <img id="frameCompare" class="top_icon" src="../public/images/frameCompare.svg"></img>
+          <img id="blurCreateBtn" class="top_icon" src="../public/images/blur.svg"></img>
+          <img id="blurSaveBtn" class="top_icon" src="../public/images/blurSave.svg"></img>
+          <img id="polygonCreateBtn" class="top_icon" src="../public/images/polygonCreate.svg"></img>
+          <img id="TransformControlAddBtn" class="top_icon" src="../public/images/cuboidTransformControl.svg"></img>
+          <!-- <button class="cm_btn00" tabindex="-1">프레임 비교 팝업</button> -->
+          <div class="threeD_popup_btn">
+            <img class="top_icon" src="../public/images/threeD_view.svg" alt="" />
+          </div>
+        </div>
+        <div class="page_frame">
+          <button class="arrow_left" id="frameLeftButton">
+            <img src="../public/images/arrow_prev.svg" alt="" />
+          </button>
+          <input type="text" id="frameIndexInput" placeholder="frame" />
+          <div id="frameIndex">0/fileLength</div>
+          <button class="arrow_right" id="frameRightButton">
+            <img src="../public/images/arrow_next.svg" alt="" />
+          </button>
+        </div>
+      </header>
+      <main>
+        <div class="cut_layer" id="cut"></div>
+        <div class="main_frame">
+          <div class="side_btn_frame">
+            <!-- <button class="cm_btn00">버튼1</button>
+            <button class="cm_btn00">버튼2</button>
+            <button class="cm_btn00">버튼3</button> -->
+          </div>
+          <div class="img_frame">
+            <div class="threeD_frame" style="position:relative">
+              <canvas id="canvasRadar" width="1920" height="1200"></canvas>
+            </div>
+            <div class="img_wrap">
+              <div class="threeD_frame_half" style="position:relative;">
+                <!-- 2d img -->
+                <img id="img" width="1920" height="1200" style="width: 100%; height: 100%; background-color: grey"
+                  src="../public/images/noimage.png" />
+                <!-- 여기다가 오른쪽 이미지 띄어주세요 -->
+                <canvas id="image_2D_canvas" width="1920" height="1200" style="position:absolute; top:0;"></canvas>
+                <canvas id="image_2D_canvas_select" width="1920" height="1200"
+                  style="position:absolute; top:0;"></canvas>
+                <canvas id="save_canvas" width="1920" height="1200" style="display: none;
+                  position:absolute; top:0;"></canvas>
+                <canvas id="image2DCanvasOnly2D" width="1920" height="1200" style="
+                    position: absolute;
+                    top: 0px;
+                    left: 0px;
+                    width: 100%;
+                    height: 100%;
+                    display: none;
+                  ">
+                </canvas>
+                <canvas id="image2DCanvasBlurRects" width="1920" height="1200" style="
+                    position: absolute;
+                    top: 0px;
+                    left: 0px;
+                    width: 100%;
+                    height: 100%;
+                    display: none;
+                  ">
+                </canvas>
+                <canvas id="image2DCanvasBlurAndLabeling2D" width="1920" height="1200" style="
+                  position: absolute;
+                  top: 0px;
+                  left: 0px;
+                  width: 100%;
+                  height: 100%;
+                  display: none;
+                ">
+                </canvas>
+                <canvas id="image2DCanvasForBlur" width="1920" height="1200"
+                  style="position: absolute; top: 0px; left: 0px; display: none"></canvas>
+              </div>
+              <div class="twoD_frame">
+                <canvas id="main_canvas" width="1920" height="1200"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="text_frame" id="boxLists">
+            <!-- 
+            <div class="info_box">
+              <div class="obj_name">
+                <input
+                  type="checkbox"
+                  class="obj_check"
+                  id="obj_check01"
+                /><label for="obj_check01"><span></span>Object 1</label>
+                <button class="fold_btn">
+                  <img src="../public/images/fold_arrow.svg" alt="" />
+                </button>
+              </div>
+              <div class="car_cont">
+                <div class="text">
+                  <div class="subject">Frame_no</div>
+                  <div class="cont">
+                    <input type="text" />
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Id</div>
+                  <div class="cont">
+                    <input type="text" />
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Sub_id</div>
+                  <div class="cont">
+                    <input type="text" />
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Category</div>
+                  <div class="cont">
+                    <select>
+                      <option value="">자동차</option>
+                      <option value="">표지판</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Obj_type</div>
+                  <div class="cont">
+                    <select>
+                      <option value="">동적 객체</option>
+                      <option value="">주행환경 객체</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Atypical_yn</div>
+                  <div class="cont">
+                    <select>
+                      <option value="">비정형 객체</option>
+                      <option value="">정형 객체</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">camera_visibility</div>
+                  <div class="cont">
+                    <select>
+                      <option value="">비정형 객체</option>
+                      <option value="">정형 객체</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Location</div>
+                  <div class="cont">
+                    <table>
+                      <tr>
+                        <th>x3d</th>
+                        <th>y3d</th>
+                        <th>z3d</th>
+                      </tr>
+                      <tr>
+                        <td>00</td>
+                        <td>00</td>
+                        <td>00</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Dimension</div>
+                  <div class="cont">
+                    <table>
+                      <tr>
+                        <th>width</th>
+                        <th>height</th>
+                        <th>length</th>
+                      </tr>
+                      <tr>
+                        <td>00</td>
+                        <td>00</td>
+                        <td>00</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Box</div>
+                  <div class="cont">
+                    <table>
+                      <tr>
+                        <th>xmin</th>
+                        <th>ymin</th>
+                        <th>xmax</th>
+                        <th>ymax</th>
+                      </tr>
+                      <tr>
+                        <td>00</td>
+                        <td>00</td>
+                        <td>00</td>
+                        <td>00</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Rotation_y</div>
+                  <div class="cont">
+                    <p>00</p>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Distance</div>
+                  <div class="cont">
+                    <p>00</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="info_box">
+              <div class="obj_name">
+                <input
+                  type="checkbox"
+                  class="obj_check"
+                  id="obj_check02"
+                /><label for="obj_check02"><span></span>Object 2</label>
+                <button class="fold_btn">
+                  <img src="../public/images/fold_arrow.svg" alt="" />
+                </button>
+              </div>
+              <div class="car_cont">
+                <div class="text">
+                  <div class="subject">Frame_no</div>
+                  <div class="cont">
+                    <input type="text" />
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Id</div>
+                  <div class="cont">
+                    <input type="text" />
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Sub_id</div>
+                  <div class="cont">
+                    <input type="text" />
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Category</div>
+                  <div class="cont">
+                    <select>
+                      <option value="">자동차</option>
+                      <option value="">표지판</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Obj_type</div>
+                  <div class="cont">
+                    <select>
+                      <option value="">동적 객체</option>
+                      <option value="">주행환경 객체</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Atypical_yn</div>
+                  <div class="cont">
+                    <select>
+                      <option value="">비정형 객체</option>
+                      <option value="">정형 객체</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">camera_visibility</div>
+                  <div class="cont">
+                    <select>
+                      <option value="">비정형 객체</option>
+                      <option value="">정형 객체</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Location</div>
+                  <div class="cont">
+                    <table>
+                      <tr>
+                        <th>x3d</th>
+                        <th>y3d</th>
+                        <th>z3d</th>
+                      </tr>
+                      <tr>
+                        <td>00</td>
+                        <td>00</td>
+                        <td>00</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Dimension</div>
+                  <div class="cont">
+                    <table>
+                      <tr>
+                        <th>width</th>
+                        <th>height</th>
+                        <th>length</th>
+                      </tr>
+                      <tr>
+                        <td>00</td>
+                        <td>00</td>
+                        <td>00</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Box</div>
+                  <div class="cont">
+                    <table>
+                      <tr>
+                        <th>xmin</th>
+                        <th>ymin</th>
+                        <th>xmax</th>
+                        <th>ymax</th>
+                      </tr>
+                      <tr>
+                        <td>00</td>
+                        <td>00</td>
+                        <td>00</td>
+                        <td>00</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Rotation_y</div>
+                  <div class="cont">
+                    <p>00</p>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Distance</div>
+                  <div class="cont">
+                    <p>00</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="info_box">
+              <div class="obj_name">
+                <input
+                  type="checkbox"
+                  class="obj_check"
+                  id="obj_check03"
+                /><label for="obj_check03"><span></span>Object 3</label>
+                <button class="fold_btn">
+                  <img src="../public/images/fold_arrow.svg" alt="" />
+                </button>
+              </div>
+              <div class="car_cont">
+                <div class="text">
+                  <div class="subject">Frame_no</div>
+                  <div class="cont">
+                    <input type="text" />
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Id</div>
+                  <div class="cont">
+                    <input type="text" />
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Sub_id</div>
+                  <div class="cont">
+                    <input type="text" />
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Category</div>
+                  <div class="cont">
+                    <select>
+                      <option value="">자동차</option>
+                      <option value="">표지판</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Obj_type</div>
+                  <div class="cont">
+                    <select>
+                      <option value="">동적 객체</option>
+                      <option value="">주행환경 객체</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Atypical_yn</div>
+                  <div class="cont">
+                    <select>
+                      <option value="">비정형 객체</option>
+                      <option value="">정형 객체</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">camera_visibility</div>
+                  <div class="cont">
+                    <select>
+                      <option value="">비정형 객체</option>
+                      <option value="">정형 객체</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Location</div>
+                  <div class="cont">
+                    <table>
+                      <tr>
+                        <th>x3d</th>
+                        <th>y3d</th>
+                        <th>z3d</th>
+                      </tr>
+                      <tr>
+                        <td>00</td>
+                        <td>00</td>
+                        <td>00</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Dimension</div>
+                  <div class="cont">
+                    <table>
+                      <tr>
+                        <th>width</th>
+                        <th>height</th>
+                        <th>length</th>
+                      </tr>
+                      <tr>
+                        <td>00</td>
+                        <td>00</td>
+                        <td>00</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Box</div>
+                  <div class="cont">
+                    <table>
+                      <tr>
+                        <th>xmin</th>
+                        <th>ymin</th>
+                        <th>xmax</th>
+                        <th>ymax</th>
+                      </tr>
+                      <tr>
+                        <td>00</td>
+                        <td>00</td>
+                        <td>00</td>
+                        <td>00</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Rotation_y</div>
+                  <div class="cont">
+                    <p>00</p>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Distance</div>
+                  <div class="cont">
+                    <p>00</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="info_box">
+              <div class="obj_name">
+                <input
+                  type="checkbox"
+                  class="obj_check"
+                  id="obj_check04"
+                /><label for="obj_check04"><span></span>Object 4</label>
+                <button class="fold_btn">
+                  <img src="../public/images/fold_arrow.svg" alt="" />
+                </button>
+              </div>
+              <div class="car_cont">
+                <div class="text">
+                  <div class="subject">Frame_no</div>
+                  <div class="cont">
+                    <input type="text" />
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Id</div>
+                  <div class="cont">
+                    <input type="text" />
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Sub_id</div>
+                  <div class="cont">
+                    <input type="text" />
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Category</div>
+                  <div class="cont">
+                    <select>
+                      <option value="">자동차</option>
+                      <option value="">표지판</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Obj_type</div>
+                  <div class="cont">
+                    <select>
+                      <option value="">동적 객체</option>
+                      <option value="">주행환경 객체</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Atypical_yn</div>
+                  <div class="cont">
+                    <select>
+                      <option value="">비정형 객체</option>
+                      <option value="">정형 객체</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">camera_visibility</div>
+                  <div class="cont">
+                    <select>
+                      <option value="">비정형 객체</option>
+                      <option value="">정형 객체</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Location</div>
+                  <div class="cont">
+                    <table>
+                      <tr>
+                        <th>x3d</th>
+                        <th>y3d</th>
+                        <th>z3d</th>
+                      </tr>
+                      <tr>
+                        <td>00</td>
+                        <td>00</td>
+                        <td>00</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Dimension</div>
+                  <div class="cont">
+                    <table>
+                      <tr>
+                        <th>width</th>
+                        <th>height</th>
+                        <th>length</th>
+                      </tr>
+                      <tr>
+                        <td>00</td>
+                        <td>00</td>
+                        <td>00</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Box</div>
+                  <div class="cont">
+                    <table>
+                      <tr>
+                        <th>xmin</th>
+                        <th>ymin</th>
+                        <th>xmax</th>
+                        <th>ymax</th>
+                      </tr>
+                      <tr>
+                        <td>00</td>
+                        <td>00</td>
+                        <td>00</td>
+                        <td>00</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Rotation_y</div>
+                  <div class="cont">
+                    <p>00</p>
+                  </div>
+                </div>
+                <div class="text">
+                  <div class="subject">Distance</div>
+                  <div class="cont">
+                    <p>00</p>
+                  </div>
+                </div>
+              </div>
+            </div> -->
+          </div>
+        </div>
+
+        <div class="popup_layer">
+          <div class="img_popup">
+            <div class="popup_header">
+              <button class="close_btn">
+                <img src="../public/images/cancel.svg" alt="닫기" />
+              </button>
+            </div>
+            <div class="popup_content">
+              <div class="threeD_frame">
+                <img src="../public/images/testImgs/0047.png" style="width:100%; height:100%;" />
+              </div>
+              <div class="threeD_frame">
+                <img src="../public/images/testImgs/pointcloudTest.JPG" style="width:100%; height:100%;" />
+              </div>
+              <div class="threeD_frame">
+                <img src="../public/images/testImgs/0049.png" style="width:100%; height:100%;" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+
+</html>

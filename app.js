@@ -15,6 +15,7 @@ const xss = require('xss-clean');
 const helmet = require('helmet');
 const compression = require('compression');
 const config = require('./src/config/config');
+const template = require('./src/public/index')
 const { authLimiter } = require('./src/middleware/rateLimiter');
 
 const app = express();
@@ -29,6 +30,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // URL을 통해 전달되는 데이터에 한글, 공백 등과 같은 문자가 포함될 경우 제대로 인식되지 않는 문제 해결
 app.use(morgan("tiny", { stream: logger.stream }))
 app.use(cookieParser());
+app.use(express.static(__dirname + "/public"));
+
+app.set("view", __dirname + ".");
+
+app.set("view engine", "ejs");
+app.engine("html", require("ejs").renderFile);
 
 // express session 설정
 app.use(session({
@@ -37,6 +44,7 @@ app.use(session({
     resave: false, // 세션을 항상 저장할지 여부를 정하는 값(false 권장)
     saveUninitialized: true, // 초기화 되지 않은 채 스토어에 저장되는 세션
     store: new mysqlstore(config.session),
+    
 }));
 
 // TODO: 이것도 공부
@@ -65,7 +73,8 @@ app.use(passport.session());
 // }
 
 // 라우팅
-app.use("/", home); // use -> 미들웨어를 등록해주는 메서드.
+app.use('/', template)
+app.use("/v1", home); // use -> 미들웨어를 등록해주는 메서드.
 
 // 에러 핸들러 미들웨어 설정
 app.use(errorConverter);
