@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const validate = require('../middleware/validate');
+const {fileValidation} = require('../validations/index');
 const { fileController } = require('../controller/index');
 const { upload } = require('../util/file');
 // const multer = require('multer');
@@ -26,8 +27,8 @@ router
 
 router
   .route('/:originalname')
-  .get(fileController.output.downLoadFile)
-  .delete(fileController.input.deleteFile);
+  .get(validate(fileValidation.getFile), fileController.output.downLoadFile)
+  .delete(validate(fileValidation.deleteFile), fileController.input.deleteFile);
 
 
 
