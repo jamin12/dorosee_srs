@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const { password, mobile } = require('./custom.validation');
 
-const create = {
+const createUser = {
   body: Joi.object()
     .keys({
       username: Joi.string().required(),
@@ -15,7 +15,7 @@ const create = {
     })
 };
 
-const update = {
+const updateUser = {
   params: Joi.object().keys({
     username: Joi.string().required(),
   }),
@@ -41,12 +41,26 @@ const login = {
     .min(1),
 };
 
+const getUserInfo = {
+  params: Joi.object().keys({
+    username: Joi.string().required(),
+  }),
+};
+
+const deleteUser = {
+  params: Joi.object().keys({
+    username: Joi.string().required(),
+  }),
+};
+
 
 
 
 
 module.exports = {
-  create,
+  createUser,
   login,
-  update,
+  updateUser,
+  getUserInfo,
+  deleteUser,
 };

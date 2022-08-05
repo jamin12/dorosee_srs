@@ -10,9 +10,14 @@ const httpStatus = require("http-status");
 const userservice = new UserService();
 
 const output = {
-	index: async (req, res, next) => {
-		res.json({ test: "hihi", userid: req.user });
-	},
+	getUsersInfo: catchAsync(async (req, res) => {
+		const users = await userservice.getUsersinfo()
+		res.send(resultDto(httpStatus.OK, 'user list', users));
+	}),
+	getUserInfo: catchAsync(async (req, res) => {
+		const user = await userservice.getUserinfo(req.params.username)
+		res.send(resultDto(httpStatus.OK, 'user', user));
+	}),
 };
 
 const input = {
@@ -22,8 +27,13 @@ const input = {
 	}),
 
 	updateUser: catchAsync(async (req, res) => {
-		await userservice.updateUser(req.params, req.body);
+		await userservice.updateUser(req.params.username, req.body);
     res.send(resultDto(httpStatus.OK, "update success"));
+	}),
+
+	deleteUser: catchAsync(async (req, res) => {
+		await userservice.deleteUser(req.params.username);
+		res.send(resultDto(httpStatus.OK, "delete success"));
 	}),
 };
 

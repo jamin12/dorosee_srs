@@ -9,12 +9,14 @@ const { userController } = require('../controller/index');
 
 router
   .route('/')
-  .get(userController.output.index)
-  .post(validate(userValidation.create), userController.input.createUser);
+  .get(auth('user'), userController.output.getUsersInfo)
+  .post(validate(userValidation.createUser), userController.input.createUser);
 
 router
   .route('/:username')
-  .patch(validate(userValidation.update), userController.input.updateUser);
+  .get(auth('user'), validate(userValidation.getUserInfo), userController.output.getUserInfo)
+  .patch(auth('user'), validate(userValidation.updateUser), userController.input.updateUser)
+  .delete(auth('user'), validate(userValidation.deleteUser), userController.input.deleteUser);
 
 
 

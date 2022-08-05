@@ -8,10 +8,9 @@ const model = require('../../models/index');
 module.exports = () => {
     // 세션에 저장 로그인이 최초로 성공했을 때만 호출되는 함수
     passport.serializeUser(async (id,done)=>{
-        logger.info("id: " + id)
         await model.users.findOne({where :{id: id}})
-        .then(async () => {
-            done(null, id)
+        .then(async (user) => {
+            done(null, user)
         })
         .catch((err) => {
             done(err, null)

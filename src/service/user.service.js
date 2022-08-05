@@ -8,7 +8,6 @@ const pick = require("../util/pick");
 
 class UserService {
 	constructor() {
-
 	}
 
 	async getUserinfo(username) {
@@ -23,6 +22,17 @@ class UserService {
 		return result;
 	}
 
+	async getUsersinfo() {
+		//TODO: join query 만들기
+		const query = `
+		SELECT *
+		FROM users
+		LEFT OUTER JOIN user_details ON users.id = user_details.id
+		`;
+		const [result, metadata] = await sequelize.query(query);
+		return result;
+	}
+
 	async isPasswordMatchByUsername(username, password) {
 		const user = await users.findOne({
 			where: {
@@ -31,23 +41,24 @@ class UserService {
 		});
 		return bcrypt.compare(password, user.password);
 	}
-
+	
 	// user 존재 유무 체크
-	// user 이름 중복 유무
-	// TODO: 수정(유저 이름 중복 잘못됨)
-	async checkUserByUsername(username, compareUsername) {
+	async checkExistUserByusername(username) {
 		const user = await users.findOne({
 			where: {
 				username: username,
 			}
 		});
-		if(!user){
-			throw new CustomError(httpStatus.NOT_FOUND, "User not found.");
-		}
-		if (user.username === compareUsername) {
-			throw new CustomError(httpStatus.BAD_REQUEST, 'username is already in use')
-		}
+		if(!user) throw new CustomError(httpStatus.BAD_REQUEST, 'User does not exists');
 		return user.id
+	}
+
+	// username 중복체크
+	async checkUserByUsername(compareUsername) {
+		const user = await users.findAll();
+		if(!user.every(i => i.username !== compareUsername)){
+			throw new CustomError(httpStatus.BAD_REQUEST, 'Username does exists');
+		}
 	}
 
 	async createUser(userInfo) {
@@ -72,20 +83,12 @@ class UserService {
 		});
 	}
 
-	async updateUser({ username }, userInfo) {
-		const userId = await this.checkUserByUsername(username, userInfo.username);
+	async updateUser(username, userInfo) {
+		await this.checkUserByUsername(userInfo.username);
+		const userId = await this.checkExistUserByusername(username);
 		const userbasic = pick(userInfo, ['username', 'password', 'role']);
 		const userDetil = pick(userInfo, ['details']);
 		sequelize.transaction(async (t1) => {
-			await users.update(
-				userbasic,
-				{
-					where: {
-						id: userId,
-					}
-				}
-			);
-
 			// user_detail 테이블에 데이터 삽입
 			await user_details.update(
 				userDetil ,
@@ -95,8 +98,36 @@ class UserService {
 					}
 				}
 			);
+
+			await users.update(
+				userbasic,
+				{
+					where: {
+						id: userId,
+					}
+				}
+			);
 		}
 		)
+	}
+
+	async deleteUser(username){
+		const user_id = await this.checkExistUserByusername(username);
+		sequelize.transaction(async (t1) => {
+			await user_details.destroy({
+				where: {
+					id: user_id
+				}
+			});
+	
+			await users.destroy({
+				where: {
+					id: user_id
+				}
+			});
+		})
+
+
 	}
 
 }

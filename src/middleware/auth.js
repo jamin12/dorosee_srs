@@ -27,7 +27,7 @@ const auth =
   (...requiredRights) =>
   async (req, res, next) => {
     return new Promise((resolve, reject) => {
-      verifyCallback(req,resolve,reject,requiredRights)(req, res, next);
+      verifyCallback(req,resolve,reject,requiredRights);
     })
       .then(() => next())
       .catch((err) => next(err));
