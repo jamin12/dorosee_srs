@@ -21,7 +21,13 @@ const { upload } = require('../util/file');
 
 router
   .route('/')
-  .post(upload.single('file'), fileController.output.index);
+  .post(upload.single('file'), fileController.input.insertFile);
+
+
+router
+  .route('/:originalname')
+  .get(fileController.output.downLoadFile)
+  .delete(fileController.input.deleteFile);
 
 
 

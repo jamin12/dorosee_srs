@@ -12,7 +12,7 @@ const printFormat = printf(({timestamp,label,level,message}) => {
 const printLogFormat = {
     file :combine(
         label({
-            label: "codiary"
+            label: "SRS"
         }), // 프로젝트 이름
         timestamp({
             format: "YYYY-MM-DD HH:mm:ss",

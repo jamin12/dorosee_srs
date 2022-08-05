@@ -98,11 +98,11 @@ module.exports = {
   //   },
   //   from: envVars.EMAIL_FROM
   // },
-  // storage: {
-  //   appRoot: appRoot + '',
-  //   root: envVars.STORAGE_PATH,
-  //   tmp: envVars.STORAGE_PATH + '/tmp',
-  // },
+  storage: {
+    appRoot: appRoot + '',
+    root: envVars.STORAGE_PATH,
+    tmp: envVars.STORAGE_PATH + '/tmp',
+  },
   session: {
     host: envVars.MYSQL_HOST,
     port: envVars.MYSQL_PORT,
